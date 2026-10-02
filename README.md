@@ -86,7 +86,7 @@ dulich-ocop-dautien/
 3. Bấm **Add New** -> **Project** -> Chọn repository `dulich-ocop-dautien`.
 4. Trong phần **Environment Variables**, thêm biến:
    - Key: `PUBLIC_SANITY_PROJECT_ID`
-   - Value: *(Điền Project ID lấy ở Bước 1)*
+   - Value: *(Điền Project ID lấy ở Bước 1)*...
 5. Bấm nút **Deploy**. Trong vòng 1 phút, Vercel sẽ tự động build và cấp cho anh một đường link website chính thức dạng: `https://dulich-ocop-dautien.vercel.app` với chứng chỉ bảo mật SSL HTTPS miễn phí.
 
 ### BƯỚC 4: THIẾT LẬP TỰ ĐỘNG CẬP NHẬT KHI ĐĂNG BÀI (WEBHOOK)
