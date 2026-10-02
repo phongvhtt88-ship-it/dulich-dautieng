@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityClient, urlFor, portableTextToHtml } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const mockSpots = [
+    { slug: { current: 'rung-kien-an-ho-dau-tieng' } },
+    { slug: { current: 'vuon-cay-an-trai-ven-song' } },
+    { slug: { current: 'ban-dao-tha-la' } }
+  ];
+
+  try {
+    if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+      const res = await sanityClient.fetch(`*[_type == "touristSpot"]{ "slug": slug }`);
+      if (res && res.length > 0) return res.map((item) => ({ params: { slug: item.slug.current } }));
+    }
+  } catch (e) {}
+
+  return mockSpots.map((item) => ({ params: { slug: item.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+let spot = {
+  title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
+  category: 'heritage',
+  address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
+  ticketPrice: 'Miễn phí',
+  openHours: '06:00 - 18:00 hàng ngày',
+  phone: '0274.3561.000',
+  googleMapsUrl: 'https://maps.google.com',
+  thumbnail: null,
+  description: null
+};
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const fetched = await sanityClient.fetch(`*[_type == "touristSpot" && slug.current == $slug][0]`, { slug });
+    if (fetched) spot = fetched;
+  }
+} catch (e) {}
+
+const imageUrl = spot.thumbnail ? urlFor(spot.thumbnail).width(1200).height(600).url() : 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop';
+const bodyHtml = spot.description ? portableTextToHtml(spot.description) : '<p class="text-gray-700 leading-relaxed">Khu di tích lịch sử và danh lam thắng cảnh sinh thái tiêu biểu của địa phương. Nơi đây lưu giữ những giá trị truyền thống cách mạng hào hùng, đồng thời sở hữu cảnh quan thiên nhiên hồ nước thoáng đãng, rừng cây râm mát, là điểm đến không thể bỏ qua của du khách khi ghé thăm địa phương.</p>';
+---
+
+<Layout title={spot.title}>
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <a href="/du-lich" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:underline mb-6">
+      ← Quay lại danh sách điểm đến
+    </a>
+
+    <h1 class="text-2xl sm:text-4xl font-black text-gray-900 leading-tight mb-4">{spot.title}</h1>
+    
+    <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-600 mb-8 pb-6 border-b border-gray-100">
+      <span class="bg-brand-50 text-brand-800 font-bold px-3 py-1 rounded-full">Địa điểm du lịch</span>
+      <span>📍 {spot.address}</span>
+      {spot.openHours && <span>⏰ {spot.openHours}</span>}
+      {spot.ticketPrice && <span>🎟️ {spot.ticketPrice}</span>}
+    </div>
+
+    <!-- Ảnh lớn -->
+    <div class="rounded-3xl overflow-hidden shadow-md mb-8">
+      <img src={imageUrl} alt={spot.title} class="w-full h-80 sm:h-[450px] object-cover" />
+    </div>
+
+    <!-- Nội dung thuyết minh -->
+    <div class="prose max-w-none text-gray-800 text-base sm:text-lg leading-relaxed space-y-4">
+      <Fragment set:html={bodyHtml} />
+    </div>
+
+    <!-- Nút điều hướng chỉ đường & Hotline -->
+    <div class="mt-12 p-6 bg-brand-50 rounded-2xl border border-brand-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="font-bold text-brand-900 text-lg">Bạn muốn ghé thăm địa điểm này?</h3>
+        <p class="text-sm text-brand-700 mt-1">Sử dụng Google Maps để nhận chỉ đường chi tiết hoặc gọi hotline hỗ trợ</p>
+      </div>
+      <div class="flex items-center gap-3">
+        {spot.googleMapsUrl && (
+          <a href={spot.googleMapsUrl} target="_blank" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">
+            Chỉ đường Google Maps
+          </a>
+        )}
+        <a href="tel:02743561000" class="bg-brand-700 hover:bg-brand-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">
+          Hotline hỗ trợ
+        </a>
+      </div>
+    </div>
+  </article>
+</Layout>

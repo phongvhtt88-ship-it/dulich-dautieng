@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityClient, portableTextToHtml } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const mockPosts = [
+    { slug: { current: 'khai-mac-le-hoi-mua-trai-chin' } },
+    { slug: { current: 'xuc-tien-thuong-mai-ocop' } }
+  ];
+
+  try {
+    if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+      const res = await sanityClient.fetch(`*[_type == "post"]{ "slug": slug }`);
+      if (res && res.length > 0) return res.map((item) => ({ params: { slug: item.slug.current } }));
+    }
+  } catch (e) {}
+
+  return mockPosts.map((item) => ({ params: { slug: item.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+let post = {
+  title: 'Khai mạc Lễ hội Mùa trái chín Dầu Tiếng năm 2026',
+  publishedAt: '2026-06-15T08:00:00Z',
+  excerpt: 'Lễ hội quy tụ hơn 50 gian hàng trưng bày các loại trái cây đặc sản.',
+  body: null
+};
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const fetched = await sanityClient.fetch(`*[_type == "post" && slug.current == $slug][0]`, { slug });
+    if (fetched) post = fetched;
+  }
+} catch (e) {}
+
+const bodyHtml = post.body ? portableTextToHtml(post.body) : '<p class="text-gray-700 leading-relaxed">Sự kiện lễ hội nhằm tôn vinh những thành quả lao động của bà con nông dân, tạo cơ hội kết nối giao thương giữa các nhà vườn, hợp tác xã với các đơn vị phân phối và du khách gần xa. Ban Tổ chức trân trọng kính mời quý bà con nhân dân và du khách đến tham quan, thưởng thức trái cây và trải nghiệm các trò chơi dân gian đặc sắc.</p>';
+---
+
+<Layout title={post.title}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <a href="/tin-tuc" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:underline mb-6">
+      ← Quay lại danh sách tin tức
+    </a>
+
+    <h1 class="text-2xl sm:text-4xl font-black text-gray-900 leading-tight mb-4">{post.title}</h1>
+    
+    <div class="text-xs sm:text-sm text-gray-500 mb-8 pb-4 border-b border-gray-100">
+      Đăng ngày: {new Date(post.publishedAt).toLocaleDateString('vi-VN')}
+    </div>
+
+    <div class="prose max-w-none text-gray-800 text-base sm:text-lg leading-relaxed space-y-4">
+      <Fragment set:html={bodyHtml} />
+    </div>
+  </article>
+</Layout>

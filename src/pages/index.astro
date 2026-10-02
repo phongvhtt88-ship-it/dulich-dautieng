@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+import OcopCard from '../components/OcopCard.astro';
+import SpotCard from '../components/SpotCard.astro';
+import InteractiveMap from '../components/InteractiveMap.astro';
+import { sanityClient } from '../lib/sanity';
+
+// Mock data dự phòng khi chưa cấu hình Sanity Project ID
+const mockSpots = [
+  {
+    title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
+    slug: { current: 'rung-kien-an-ho-dau-tieng' },
+    category: 'heritage',
+    address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
+    ticketPrice: 'Miễn phí vé vào',
+    openHours: '06:00 - 18:00',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.312, lng: 106.368 }
+  },
+  {
+    title: 'Vườn Cây Ăn Trái Sinh Thái Ven Sông Sài Gòn',
+    slug: { current: 'vuon-cay-an-trai-ven-song' },
+    category: 'ecotourism',
+    address: 'Ấp An Lợi, Dầu Tiếng, Bình Dương',
+    ticketPrice: '50.000đ/người (Bao ăn trái cây)',
+    openHours: '08:00 - 17:00',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.325, lng: 106.382 }
+  },
+  {
+    title: 'Điểm Cắm Trại & Check-in Bán Đảo Tha La',
+    slug: { current: 'ban-dao-tha-la' },
+    category: 'checkin',
+    address: 'Bờ hồ Dầu Tiếng, Bình Dương',
+    ticketPrice: 'Tự do',
+    openHours: '24/24',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.345, lng: 106.340 }
+  }
+];
+
+const mockOcop = [
+  {
+    name: 'Bưởi Da Xanh Dầu Tiếng Đạt Chuẩn VietGAP',
+    slug: { current: 'buoi-da-xanh-dau-tieng' },
+    starRating: '4',
+    producer: 'HTX Nông Nghiệp Dầu Tiếng',
+    priceRange: '45.000đ - 65.000đ/kg',
+    phoneContact: '0901234567',
+    zaloPhone: '0901234567',
+    standards: ['VietGAP', 'OCOP 4 Sao']
+  },
+  {
+    name: 'Mật Ong Hoa Rừng Tự Nhiên',
+    slug: { current: 'mat-ong-hoa-rung' },
+    starRating: '3',
+    producer: 'Hộ kinh doanh Lâm Nghiệp Xanh',
+    priceRange: '180.000đ - 350.000đ/lọ',
+    phoneContact: '0912345678',
+    zaloPhone: '0912345678',
+    standards: ['ATTP', 'OCOP 3 Sao']
+  },
+  {
+    name: 'Măng Cụt Lái Thiêu - Dầu Tiếng Mùa Vụ',
+    slug: { current: 'mang-cut-dau-tieng' },
+    starRating: '4',
+    producer: 'Tổ hợp tác Trái cây địa phương',
+    priceRange: '70.000đ - 110.000đ/kg',
+    phoneContact: '0987654321',
+    zaloPhone: '0987654321',
+    standards: ['OCOP 4 Sao']
+  }
+];
+
+let spots = mockSpots;
+let ocopProducts = mockOcop;
+
+// Cố gắng query từ Sanity nếu đã có Project ID hợp lệ
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const fetchedSpots = await sanityClient.fetch(`*[_type == "touristSpot"] | order(_createdAt desc)[0...3]`);
+    if (fetchedSpots && fetchedSpots.length > 0) spots = fetchedSpots;
+    
+    const fetchedOcop = await sanityClient.fetch(`*[_type == "ocopProduct"] | order(_createdAt desc)[0...3]`);
+    if (fetchedOcop && fetchedOcop.length > 0) ocopProducts = fetchedOcop;
+  }
+} catch (e) {
+  console.log('Sanity query fallback to mock data');
+}
+---
+
+<Layout title="Trang chủ">
+  
+  <!-- HERO BANNER -->
+  <section class="relative bg-gradient-to-br from-brand-900 via-brand-800 to-emerald-950 text-white py-20 sm:py-28 overflow-hidden">
+    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 bg-brand-700/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-green-200 uppercase tracking-widest mb-6 border border-brand-500/30">
+          <span>🌿</span> Khám Phá Địa Phương
+        </div>
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-tight">
+          Văn Hóa - Du Lịch & <br />
+          <span class="text-green-400">Nông Sản OCOP Tiêu Biểu</span>
+        </h1>
+        <p class="mt-5 text-base sm:text-lg text-gray-200 leading-relaxed font-normal">
+          Chào mừng quý du khách đến với miền đất sinh thái trong lành, di tích lịch sử anh hùng và thưởng thức hương vị đặc sản nông nghiệp tinh hoa được chứng nhận OCOP.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3 sm:gap-4">
+          <a href="/du-lich" class="bg-brand-500 hover:bg-brand-600 text-gray-950 font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-green-500/20 transition transform hover:-translate-y-0.5">
+            Khám phá điểm đến →
+          </a>
+          <a href="/san-pham-ocop" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold px-6 py-3.5 rounded-xl border border-white/20 transition">
+            Gian hàng OCOP
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ĐIỂM ĐẾN DU LỊCH TIÊU BIỂU -->
+  <section class="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
+      <div>
+        <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Trải nghiệm ấn tượng</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Điểm Đến Du Lịch Nổi Bật</h2>
+      </div>
+      <a href="/du-lich" class="text-sm font-bold text-brand-700 hover:text-brand-800 transition flex items-center gap-1">
+        Xem tất cả điểm đến <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {spots.map((spot) => (
+        <SpotCard spot={spot} />
+      ))}
+    </div>
+  </section>
+
+  <!-- BẢN ĐỒ TƯƠNG TÁC SỐ -->
+  <section class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <InteractiveMap spots={spots} />
+  </section>
+
+  <!-- GIAN HÀNG SẢN PHẨM NÔNG SẢN & OCOP -->
+  <section class="py-14 sm:py-20 bg-emerald-50/50 mt-12 border-y border-emerald-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Đặc sản quê hương</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Nông Sản OCOP Địa Phương</h2>
+          <p class="text-xs sm:text-sm text-gray-500 mt-1">Sản phẩm đạt chứng nhận 3 sao, 4 sao an toàn, rõ nguồn gốc xuất xứ</p>
+        </div>
+        <a href="/san-pham-ocop" class="text-sm font-bold text-brand-700 hover:text-brand-800 transition flex items-center gap-1">
+          Xem toàn bộ giỏ hàng OCOP <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {ocopProducts.map((product) => (
+          <OcopCard product={product} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Layout>

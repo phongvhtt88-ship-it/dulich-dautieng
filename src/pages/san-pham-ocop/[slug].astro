@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityClient, urlFor, portableTextToHtml } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const mockOcop = [
+    { slug: { current: 'buoi-da-xanh-dau-tieng' } },
+    { slug: { current: 'mat-ong-hoa-rung' } },
+    { slug: { current: 'mang-cut-dau-tieng' } }
+  ];
+
+  try {
+    if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+      const res = await sanityClient.fetch(`*[_type == "ocopProduct"]{ "slug": slug }`);
+      if (res && res.length > 0) return res.map((item) => ({ params: { slug: item.slug.current } }));
+    }
+  } catch (e) {}
+
+  return mockOcop.map((item) => ({ params: { slug: item.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+let product = {
+  name: 'Bưởi Da Xanh Dầu Tiếng Đạt Chuẩn VietGAP',
+  starRating: '4',
+  producer: 'HTX Nông Nghiệp Dầu Tiếng',
+  address: 'Xã Dầu Tiếng, tỉnh Bình Dương',
+  priceRange: '45.000đ - 65.000đ/kg',
+  phoneContact: '0901234567',
+  zaloPhone: '0901234567',
+  standards: ['VietGAP', 'OCOP 4 Sao', 'ATTP'],
+  mainImage: null,
+  story: null
+};
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const fetched = await sanityClient.fetch(`*[_type == "ocopProduct" && slug.current == $slug][0]`, { slug });
+    if (fetched) product = fetched;
+  }
+} catch (e) {}
+
+const imageUrl = product.mainImage ? urlFor(product.mainImage).width(800).height(600).url() : 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=800&auto=format&fit=crop';
+const bodyHtml = product.story ? portableTextToHtml(product.story) : '<p class="text-gray-700 leading-relaxed">Sản phẩm được canh tác theo quy trình VietGAP an toàn sinh học trên vùng đất phù sa ven sông màu mỡ. Từng trái bưởi được chọn lọc kỹ càng, tép mọng nước, vị ngọt thanh tự nhiên, vỏ mỏng, không sử dụng hóa chất bảo quản độc hại. Đây là niềm tự hào của bà con nông dân xã Dầu Tiếng được chứng nhận OCOP 4 sao cấp tỉnh.</p>';
+const phone = product.zaloPhone || product.phoneContact || '';
+const zaloUrl = phone ? `https://zalo.me/${phone.replace(/\D/g, '')}` : '#';
+---
+
+<Layout title={product.name}>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <a href="/san-pham-ocop" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:underline mb-6">
+      ← Quay lại gian hàng OCOP
+    </a>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Ảnh sản phẩm -->
+      <div>
+        <div class="rounded-3xl overflow-hidden shadow-sm border border-gray-100 bg-white">
+          <img src={imageUrl} alt={product.name} class="w-full h-80 sm:h-96 object-cover" />
+        </div>
+      </div>
+
+      <!-- Thông tin & Nút mua -->
+      <div class="flex flex-col justify-between">
+        <div>
+          <div class="inline-block bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+            ★ {product.starRating && product.starRating !== '0' ? `SẢN PHẨM OCOP ${product.starRating} SAO` : 'NÔNG SẢN TIÊU BIỂU'}
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-gray-900 leading-snug">{product.name}</h1>
+          
+          <div class="mt-4 space-y-2 text-sm text-gray-600">
+            <p><strong class="text-gray-900">Chủ thể sản xuất:</strong> {product.producer}</p>
+            {product.address && <p><strong class="text-gray-900">Địa chỉ:</strong> {product.address}</p>}
+            {product.priceRange && (
+              <p class="text-xl font-black text-brand-700 pt-2">{product.priceRange}</p>
+            )}
+          </div>
+
+          {product.standards && product.standards.length > 0 && (
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Chứng nhận chất lượng:</span>
+              <div class="flex flex-wrap gap-2">
+                {product.standards.map((std) => (
+                  <span class="bg-green-50 text-green-800 text-xs font-bold px-3 py-1 rounded-lg border border-green-200">
+                    ✓ {std}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- Cụm nút liên hệ mua hàng -->
+        <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+          {phone && (
+            <a 
+              href={zaloUrl}
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow transition"
+            >
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.35 5L2 22l5.14-1.32C8.58 21.52 10.24 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+              Đặt mua qua Zalo
+            </a>
+          )}
+          {product.phoneContact && (
+            <a 
+              href={`tel:${product.phoneContact}`}
+              class="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 px-6 rounded-2xl shadow transition"
+            >
+              Gọi Hotline
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Câu chuyện sản phẩm -->
+    <div class="mt-16 pt-10 border-t border-gray-200">
+      <h2 class="text-2xl font-black text-gray-900 mb-6">Câu Chuyện Sản Phẩm & Quy Trình Sản Xuất</h2>
+      <div class="prose max-w-none text-gray-800 text-base sm:text-lg leading-relaxed space-y-4">
+        <Fragment set:html={bodyHtml} />
+      </div>
+    </div>
+  </div>
+</Layout>

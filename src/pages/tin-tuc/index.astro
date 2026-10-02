@@ -1,0 +1,62 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityClient, urlFor } from '../../lib/sanity';
+
+const mockPosts = [
+  {
+    title: 'Khai mạc Lễ hội Mùa trái chín Dầu Tiếng năm 2026',
+    slug: { current: 'khai-mac-le-hoi-mua-trai-chin' },
+    publishedAt: '2026-06-15T08:00:00Z',
+    excerpt: 'Lễ hội quy tụ hơn 50 gian hàng trưng bày các loại trái cây đặc sản măng cụt, sầu riêng, bưởi da xanh và các sản phẩm OCOP tiêu biểu của huyện.',
+    mainImage: null
+  },
+  {
+    title: 'Chương trình xúc tiến thương mại nông sản OCOP kết nối du lịch xanh',
+    slug: { current: 'xuc-tien-thuong-mai-ocop' },
+    publishedAt: '2026-08-20T09:30:00Z',
+    excerpt: 'Đẩy mạnh liên kết giữa các nhà vườn sinh thái với doanh nghiệp lữ hành, đưa sản phẩm OCOP địa phương đến tay du khách gần xa.',
+    mainImage: null
+  }
+];
+
+let posts = mockPosts;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const res = await sanityClient.fetch(`*[_type == "post"] | order(publishedAt desc)`);
+    if (res && res.length > 0) posts = res;
+  }
+} catch (e) {}
+---
+
+<Layout title="Tin Tức & Sự Kiện">
+  <div class="bg-gray-900 text-white py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl sm:text-4xl font-black">Tin Tức, Lễ Hội & Sự Kiện</h1>
+      <p class="mt-2 text-gray-300 text-sm sm:text-base max-w-2xl">
+        Cập nhật các hoạt động xúc tiến du lịch, thông tin mùa vụ nông sản và các sự kiện lễ hội văn hóa tại địa phương.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {posts.map((post) => (
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group">
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-brand-700 uppercase tracking-wider">Tin tức địa phương</span>
+              <h3 class="text-xl font-bold text-gray-900 mt-2 group-hover:text-brand-700 transition">
+                <a href={`/tin-tuc/${post.slug.current}`}>{post.title}</a>
+              </h3>
+              <p class="text-sm text-gray-600 mt-3 leading-relaxed">{post.excerpt}</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+              <span>Ngày đăng: {new Date(post.publishedAt).toLocaleDateString('vi-VN')}</span>
+              <a href={`/tin-tuc/${post.slug.current}`} class="font-bold text-brand-700 hover:underline">Đọc tiếp →</a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,75 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OcopCard from '../../components/OcopCard.astro';
+import { sanityClient } from '../../lib/sanity';
+
+const mockOcop = [
+  {
+    name: 'Bưởi Da Xanh Dầu Tiếng Đạt Chuẩn VietGAP',
+    slug: { current: 'buoi-da-xanh-dau-tieng' },
+    starRating: '4',
+    producer: 'HTX Nông Nghiệp Dầu Tiếng',
+    priceRange: '45.000đ - 65.000đ/kg',
+    phoneContact: '0901234567',
+    zaloPhone: '0901234567',
+    standards: ['VietGAP', 'OCOP 4 Sao']
+  },
+  {
+    name: 'Mật Ong Hoa Rừng Tự Nhiên',
+    slug: { current: 'mat-ong-hoa-rung' },
+    starRating: '3',
+    producer: 'Hộ kinh doanh Lâm Nghiệp Xanh',
+    priceRange: '180.000đ - 350.000đ/lọ',
+    phoneContact: '0912345678',
+    zaloPhone: '0912345678',
+    standards: ['ATTP', 'OCOP 3 Sao']
+  },
+  {
+    name: 'Măng Cụt Lái Thiêu - Dầu Tiếng Mùa Vụ',
+    slug: { current: 'mang-cut-dau-tieng' },
+    starRating: '4',
+    producer: 'Tổ hợp tác Trái cây địa phương',
+    priceRange: '70.000đ - 110.000đ/kg',
+    phoneContact: '0987654321',
+    zaloPhone: '0987654321',
+    standards: ['OCOP 4 Sao']
+  }
+];
+
+let products = mockOcop;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const res = await sanityClient.fetch(`*[_type == "ocopProduct"] | order(starRating desc)`);
+    if (res && res.length > 0) products = res;
+  }
+} catch (e) {}
+---
+
+<Layout title="Sản Phẩm Nông Nghiệp & OCOP">
+  <div class="bg-gradient-to-r from-emerald-900 to-green-800 text-white py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-xs font-bold text-green-300 uppercase tracking-wider mb-3">
+        <span>★</span> Mỗi Xã Một Sản Phẩm
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black">Gian Hàng Nông Sản & OCOP Địa Phương</h1>
+      <p class="mt-2 text-gray-200 text-sm sm:text-base max-w-2xl">
+        Quảng bá, kết nối tiêu thụ nông sản sạch, sản phẩm OCOP đạt chuẩn 3 sao, 4 sao do các Hợp tác xã, tổ hợp tác và bà con nông dân địa phương tâm huyết sản xuất.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+      <h2 class="text-xl sm:text-2xl font-black text-gray-900">Danh Mục Sản Phẩm ({products.length})</h2>
+      <div class="text-xs text-gray-500 font-semibold">
+        Hỗ trợ đặt hàng trực tiếp qua Zalo / Hotline chủ thể
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {products.map((product) => (
+        <OcopCard product={product} />
+      ))}
+    </div>
+  </div>
+</Layout>

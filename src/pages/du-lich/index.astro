@@ -1,0 +1,75 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SpotCard from '../../components/SpotCard.astro';
+import InteractiveMap from '../../components/InteractiveMap.astro';
+import { sanityClient } from '../../lib/sanity';
+
+const mockSpots = [
+  {
+    title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
+    slug: { current: 'rung-kien-an-ho-dau-tieng' },
+    category: 'heritage',
+    address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
+    ticketPrice: 'Miễn phí',
+    openHours: '06:00 - 18:00',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.312, lng: 106.368 }
+  },
+  {
+    title: 'Vườn Cây Ăn Trái Sinh Thái Ven Sông',
+    slug: { current: 'vuon-cay-an-trai-ven-song' },
+    category: 'ecotourism',
+    address: 'Ấp An Lợi, Dầu Tiếng, Bình Dương',
+    ticketPrice: '50.000đ/người',
+    openHours: '08:00 - 17:00',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.325, lng: 106.382 }
+  },
+  {
+    title: 'Điểm Cắm Trại & Check-in Bán Đảo Tha La',
+    slug: { current: 'ban-dao-tha-la' },
+    category: 'checkin',
+    address: 'Bờ hồ Dầu Tiếng, Bình Dương',
+    ticketPrice: 'Tự do',
+    openHours: '24/24',
+    googleMapsUrl: 'https://maps.google.com',
+    gpsLocation: { lat: 11.345, lng: 106.340 }
+  }
+];
+
+let spots = mockSpots;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const res = await sanityClient.fetch(`*[_type == "touristSpot"] | order(_createdAt desc)`);
+    if (res && res.length > 0) spots = res;
+  }
+} catch (e) {}
+---
+
+<Layout title="Điểm Đến Du Lịch">
+  <div class="bg-brand-900 text-white py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl sm:text-4xl font-black">Khám Phá Điểm Đến Du Lịch</h1>
+      <p class="mt-2 text-gray-300 text-sm sm:text-base max-w-2xl">
+        Danh sách các danh lam thắng cảnh, di tích lịch sử hào hùng, vườn cây ăn trái sum suê và điểm cắm trại thư giãn tại địa phương.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
+    <!-- Bản đồ số -->
+    <div id="ban-do">
+      <InteractiveMap spots={spots} />
+    </div>
+
+    <!-- Danh sách thẻ điểm đến -->
+    <div>
+      <h2 class="text-xl sm:text-2xl font-black text-gray-900 mb-6">Tất Cả Điểm Đến ({spots.length})</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {spots.map((spot) => (
+          <SpotCard spot={spot} />
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>

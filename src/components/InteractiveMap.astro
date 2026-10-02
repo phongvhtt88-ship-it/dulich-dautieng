@@ -1,0 +1,80 @@
+---
+interface Spot {
+  title: string;
+  slug?: { current: string };
+  category: string;
+  address: string;
+  gpsLocation?: { lat: number; lng: number };
+  googleMapsUrl?: string;
+}
+
+interface Props {
+  spots: Spot[];
+}
+
+const { spots = [] } = Astro.props;
+// Lọc các điểm có tọa độ GPS
+const mapSpots = spots.filter(s => s.gpsLocation && s.gpsLocation.lat && s.gpsLocation.lng);
+---
+
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-4 sm:p-6">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-black text-gray-900">Bản Đồ Số Du Lịch Địa Phương</h2>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1">Định vị trực quan các danh lam thắng cảnh, di tích và điểm dừng chân</p>
+    </div>
+    <div class="flex items-center gap-2 text-xs font-semibold">
+      <span class="inline-flex items-center gap-1 text-red-600"><span class="w-3 h-3 rounded-full bg-red-500"></span> Điểm đến</span>
+    </div>
+  </div>
+
+  <!-- Vùng chứa bản đồ Leaflet -->
+  <div id="tourist-map" class="w-full h-80 sm:h-[480px] rounded-2xl overflow-hidden border border-gray-200 z-10"></div>
+</div>
+
+<script is:inline define:vars={{ mapSpots }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof L === 'undefined') return;
+
+    // Tọa độ trung tâm mặc định (ví dụ Dầu Tiếng, Bình Dương: 11.317, 106.375)
+    const defaultCenter = [11.317, 106.375];
+    const initialZoom = 12;
+
+    const map = L.map('tourist-map').setView(defaultCenter, initialZoom);
+
+    // Bản đồ nền OpenStreetMap (Miễn phí 100%)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Thêm các marker
+    if (mapSpots && mapSpots.length > 0) {
+      const markers = [];
+      mapSpots.forEach(spot => {
+        const { lat, lng } = spot.gpsLocation;
+        const marker = L.marker([lat, lng]).addTo(map);
+        
+        const popupContent = `
+          <div style="font-family: inherit; font-size: 13px;">
+            <strong style="color: #15803d; font-size: 14px;">${spot.title}</strong><br/>
+            <span style="color: #666; font-size: 12px;">${spot.address}</span><br/>
+            <div style="margin-top: 6px;">
+              <a href="/du-lich/${spot.slug?.current || ''}" style="color: #16a34a; font-weight: bold; text-decoration: underline;">Xem chi tiết</a>
+              ${spot.googleMapsUrl ? ` | <a href="${spot.googleMapsUrl}" target="_blank" style="color: #2563eb; text-decoration: underline;">Chỉ đường</a>` : ''}
+            </div>
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+        markers.push([lat, lng]);
+      });
+
+      // Tự động căn chỉnh vừa khung nhìn
+      if (markers.length > 1) {
+        map.fitBounds(markers, { padding: [30, 30] });
+      } else if (markers.length === 1) {
+        map.setView(markers[0], 14);
+      }
+    }
+  });
+</script>
