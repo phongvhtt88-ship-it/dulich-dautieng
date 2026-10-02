@@ -13,42 +13,62 @@ interface Props {
 }
 
 const { spots = [] } = Astro.props;
-// Lọc các điểm có tọa độ GPS
+// Lọc các điểm có tọa độ GPS hợp lệ
 const mapSpots = spots.filter(s => s.gpsLocation && s.gpsLocation.lat && s.gpsLocation.lng);
 ---
 
 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-4 sm:p-6">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
     <div>
-      <h2 class="text-xl sm:text-2xl font-black text-gray-900">Bản Đồ Số Du Lịch Địa Phương</h2>
-      <p class="text-xs sm:text-sm text-gray-500 mt-1">Định vị trực quan các danh lam thắng cảnh, di tích và điểm dừng chân</p>
+      <h2 class="text-xl sm:text-2xl font-black text-gray-900">Bản Đồ Số Du Lịch Xã Dầu Tiếng, TP.HCM</h2>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1">Định vị trực quan các khu glamping ven hồ, farmstay, di tích và điểm check-in</p>
     </div>
-    <div class="flex items-center gap-2 text-xs font-semibold">
-      <span class="inline-flex items-center gap-1 text-red-600"><span class="w-3 h-3 rounded-full bg-red-500"></span> Điểm đến</span>
+    <div class="flex items-center gap-3 text-xs font-semibold">
+      <span class="inline-flex items-center gap-1.5 text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+        <span class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-ping"></span>
+        {mapSpots.length} Điểm đến được ghim mốc
+      </span>
     </div>
   </div>
 
   <!-- Vùng chứa bản đồ Leaflet -->
-  <div id="tourist-map" class="w-full h-80 sm:h-[480px] rounded-2xl overflow-hidden border border-gray-200 z-10"></div>
+  <div id="tourist-map" class="w-full h-80 sm:h-[500px] rounded-2xl overflow-hidden border border-gray-200 shadow-inner z-10"></div>
 </div>
 
 <script is:inline define:vars={{ mapSpots }}>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (typeof L === 'undefined') return;
+  function initMap() {
+    if (typeof L === 'undefined') {
+      setTimeout(initMap, 100);
+      return;
+    }
 
-    // Tọa độ trung tâm mặc định (ví dụ Dầu Tiếng, Bình Dương: 11.317, 106.375)
-    const defaultCenter = [11.317, 106.375];
+    const mapElement = document.getElementById('tourist-map');
+    if (!mapElement) return;
+
+    // Tọa độ trung tâm hồ Dầu Tiếng (11.345, 106.365)
+    const defaultCenter = [11.345, 106.365];
     const initialZoom = 12;
 
-    const map = L.map('tourist-map').setView(defaultCenter, initialZoom);
+    const map = L.map('tourist-map', {
+      center: defaultCenter,
+      zoom: initialZoom,
+      scrollWheelZoom: false // Tránh vô tình cuộn trang khi lướt web trên điện thoại
+    });
 
-    // Bản đồ nền OpenStreetMap (Miễn phí 100%)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Sử dụng CartoDB Voyager: Tốc độ cao, đường nét sông hồ địa hình cực đẹp, 100% miễn phí không bao giờ bị chặn/xám
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
+      subdomains: 'abcd',
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    // Thêm các marker
+    // Kích hoạt nạp lại kích thước nhiều lần để triệt tiêu hiện tượng ô xám
+    map.invalidateSize();
+    setTimeout(() => { map.invalidateSize(); }, 200);
+    setTimeout(() => { map.invalidateSize(); }, 600);
+    window.addEventListener('resize', () => { map.invalidateSize(); });
+
+    // Thêm các điểm marker
     if (mapSpots && mapSpots.length > 0) {
       const markers = [];
       mapSpots.forEach(spot => {
@@ -56,12 +76,12 @@ const mapSpots = spots.filter(s => s.gpsLocation && s.gpsLocation.lat && s.gpsLo
         const marker = L.marker([lat, lng]).addTo(map);
         
         const popupContent = `
-          <div style="font-family: inherit; font-size: 13px;">
-            <strong style="color: #15803d; font-size: 14px;">${spot.title}</strong><br/>
-            <span style="color: #666; font-size: 12px;">${spot.address}</span><br/>
-            <div style="margin-top: 6px;">
+          <div style="font-family: inherit; font-size: 13px; line-height: 1.5; padding: 4px;">
+            <strong style="color: #15803d; font-size: 14px; display: block; margin-bottom: 2px;">${spot.title}</strong>
+            <span style="color: #666; font-size: 12px; display: block;">📍 ${spot.address}</span>
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee; display: flex; gap: 8px;">
               <a href="/du-lich/${spot.slug?.current || ''}" style="color: #16a34a; font-weight: bold; text-decoration: underline;">Xem chi tiết</a>
-              ${spot.googleMapsUrl ? ` | <a href="${spot.googleMapsUrl}" target="_blank" style="color: #2563eb; text-decoration: underline;">Chỉ đường</a>` : ''}
+              ${spot.googleMapsUrl ? ` | <a href="${spot.googleMapsUrl}" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">Chỉ đường Google Maps</a>` : ''}
             </div>
           </div>
         `;
@@ -69,12 +89,19 @@ const mapSpots = spots.filter(s => s.gpsLocation && s.gpsLocation.lat && s.gpsLo
         markers.push([lat, lng]);
       });
 
-      // Tự động căn chỉnh vừa khung nhìn
+      // Tự động căn chỉnh vừa vặn toàn bộ các điểm ghim
       if (markers.length > 1) {
-        map.fitBounds(markers, { padding: [30, 30] });
+        map.fitBounds(markers, { padding: [40, 40] });
       } else if (markers.length === 1) {
-        map.setView(markers[0], 14);
+        map.setView(markers[0], 13);
       }
     }
-  });
+  }
+
+  // Khởi chạy khi DOM sẵn sàng
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMap);
+  } else {
+    initMap();
+  }
 </script>
