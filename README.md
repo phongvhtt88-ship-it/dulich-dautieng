@@ -91,7 +91,7 @@ dulich-ocop-dautien/
 
 ### BƯỚC 4: THIẾT LẬP TỰ ĐỘNG CẬP NHẬT KHI ĐĂNG BÀI (WEBHOOK)
 Để mỗi khi cán bộ ấn **Publish** trên Sanity, website trên Vercel tự động build lại:
-1. Trên Vercel: Vào **Settings** của dự án -> **Git** -> Cuộn xuống mục **Deploy Hooks** -> Tạo một Hook mới tên `Sanity Update` -> Sao chép URL Webhook được cấp.
+1. Trên Vercel: Vào **Settings** của dự án -> **Git** -> Cuộn xuống mục **Deploy Hooks** -> Tạo một Hook mới tên `Sanity Update` -> Sao chép URL Webhook được cấp.,
 2. Trên Sanity Management Dashboard: Vào dự án -> **API** -> **Webhooks** -> Bấm **Create Webhook**:
    - URL: Dán URL Deploy Hook của Vercel vừa sao chép.
    - Dataset: `production`
