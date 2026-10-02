@@ -8,7 +8,7 @@ const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
 export const sanityClient = createClient({
   projectId: projectId,
   dataset: dataset,
-  useCdn: true,
+  useCdn: false,
   apiVersion: '2024-01-01',
 });
 
