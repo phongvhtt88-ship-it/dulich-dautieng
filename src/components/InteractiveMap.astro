@@ -56,10 +56,9 @@ const mapSpots = spots.filter(s => s.gpsLocation && s.gpsLocation.lat && s.gpsLo
     });
 
     // Sử dụng CartoDB Voyager: Tốc độ cao, đường nét sông hồ địa hình cực đẹp, 100% miễn phí không bao giờ bị chặn/xám
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    attribution: 'Dữ liệu bản đồ &copy; Google Maps'
     }).addTo(map);
 
     // Kích hoạt nạp lại kích thước nhiều lần để triệt tiêu hiện tượng ô xám
