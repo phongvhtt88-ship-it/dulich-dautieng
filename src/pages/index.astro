@@ -5,88 +5,136 @@ import SpotCard from '../components/SpotCard.astro';
 import InteractiveMap from '../components/InteractiveMap.astro';
 import { sanityClient } from '../lib/sanity';
 
-// Mock data dự phòng khi chưa cấu hình Sanity Project ID
+// Dữ liệu điểm du lịch thực tế tại xã Dầu Tiếng, TP. Hồ Chí Minh
 const mockSpots = [
   {
-    title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
-    slug: { current: 'rung-kien-an-ho-dau-tieng' },
+    title: 'Bằng Lăng Glamping Ven Hồ Dầu Tiếng',
+    slug: { current: 'bang-lang-glamping' },
+    category: 'checkin',
+    address: 'Bờ hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 250.000đ/người',
+    openHours: 'Đón khách 24/24',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3415,106.3550',
+    gpsLocation: { lat: 11.3415, lng: 106.3550 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Đồng Sến Farmstay Sinh Thái Ven Hồ',
+    slug: { current: 'dong-sen-farmstay' },
+    category: 'stay',
+    address: 'Ven hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 400.000đ/phòng',
+    openHours: '07:00 - 21:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3620,106.3650',
+    gpsLocation: { lat: 11.3620, lng: 106.3650 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Khu Di Tích Lịch Sử Rừng Cao Su Thời Pháp Thuộc',
+    slug: { current: 'rung-cao-su-phap-thuoc' },
     category: 'heritage',
-    address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
-    ticketPrice: 'Miễn phí vé vào',
-    openHours: '06:00 - 18:00',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.312, lng: 106.368 }
+    address: 'Trung tâm xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí tham quan',
+    openHours: '07:00 - 17:30 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3050,106.3720',
+    gpsLocation: { lat: 11.3050, lng: 106.3720 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop' } }
   },
   {
-    title: 'Vườn Cây Ăn Trái Sinh Thái Ven Sông Sài Gòn',
-    slug: { current: 'vuon-cay-an-trai-ven-song' },
+    title: 'Quần Thể Danh Thắng Núi Cậu & Chùa Thái Sơn',
+    slug: { current: 'nui-cau-chua-thai-son' },
+    category: 'heritage',
+    address: 'Núi Cậu, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí vé',
+    openHours: '06:00 - 18:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3533,106.3775',
+    gpsLocation: { lat: 11.3533, lng: 106.3775 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Thắng Cảnh Suối Trúc (Suối Tiên Dầu Tiếng)',
+    slug: { current: 'suoi-truc-dau-tieng' },
     category: 'ecotourism',
-    address: 'Ấp An Lợi, Dầu Tiếng, Bình Dương',
-    ticketPrice: '50.000đ/người (Bao ăn trái cây)',
-    openHours: '08:00 - 17:00',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.325, lng: 106.382 }
+    address: 'Chân Núi Cậu, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí',
+    openHours: '07:30 - 17:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3580,106.3810',
+    gpsLocation: { lat: 11.3580, lng: 106.3810 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop' } }
   },
   {
-    title: 'Điểm Cắm Trại & Check-in Bán Đảo Tha La',
+    title: 'Bán Đảo Tha La - Hồ Dầu Tiếng',
     slug: { current: 'ban-dao-tha-la' },
     category: 'checkin',
-    address: 'Bờ hồ Dầu Tiếng, Bình Dương',
+    address: 'Bờ hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
     ticketPrice: 'Tự do',
     openHours: '24/24',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.345, lng: 106.340 }
+    googleMapsUrl: 'https://maps.google.com/?q=11.3452,106.3408',
+    gpsLocation: { lat: 11.3452, lng: 106.3408 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop' } }
   }
 ];
 
+// Dữ liệu sản phẩm OCOP & Nông sản tiêu biểu xã Dầu Tiếng, TP. Hồ Chí Minh
 const mockOcop = [
   {
     name: 'Bưởi Da Xanh Dầu Tiếng Đạt Chuẩn VietGAP',
     slug: { current: 'buoi-da-xanh-dau-tieng' },
     starRating: '4',
-    producer: 'HTX Nông Nghiệp Dầu Tiếng',
-    priceRange: '45.000đ - 65.000đ/kg',
-    phoneContact: '0901234567',
+    producer: 'HTX Nông Nghiệp Dầu Tiếng, TP.HCM',
+    priceRange: '50.000đ - 75.000đ/kg',
+    phoneContact: '02743561000',
     zaloPhone: '0901234567',
-    standards: ['VietGAP', 'OCOP 4 Sao']
+    standards: ['VietGAP', 'OCOP 4 Sao', 'Chuỗi ATTP'],
+    mainImage: { asset: { url: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600&auto=format&fit=crop' } }
   },
   {
-    name: 'Mật Ong Hoa Rừng Tự Nhiên',
-    slug: { current: 'mat-ong-hoa-rung' },
-    starRating: '3',
-    producer: 'Hộ kinh doanh Lâm Nghiệp Xanh',
-    priceRange: '180.000đ - 350.000đ/lọ',
-    phoneContact: '0912345678',
-    zaloPhone: '0912345678',
-    standards: ['ATTP', 'OCOP 3 Sao']
-  },
-  {
-    name: 'Măng Cụt Lái Thiêu - Dầu Tiếng Mùa Vụ',
+    name: 'Măng Cụt Dầu Tiếng Chín Cây Mùa Vụ',
     slug: { current: 'mang-cut-dau-tieng' },
     starRating: '4',
-    producer: 'Tổ hợp tác Trái cây địa phương',
+    producer: 'Tổ Hợp Tác Cây Ăn Trái Dầu Tiếng',
     priceRange: '70.000đ - 110.000đ/kg',
-    phoneContact: '0987654321',
+    phoneContact: '02743561000',
     zaloPhone: '0987654321',
-    standards: ['OCOP 4 Sao']
+    standards: ['OCOP 4 Sao', 'Đặc sản tiêu biểu'],
+    mainImage: { asset: { url: 'https://images.unsplash.com/photo-1546548970-71785318a17b?w=600&auto=format&fit=crop' } }
+  },
+  {
+    name: 'Mật Ong Rừng & Hoa Cao Su Tự Nhiên Dầu Tiếng',
+    slug: { current: 'mat-ong-hoa-rung' },
+    starRating: '3',
+    producer: 'Hộ Kinh Doanh Nông Lâm Nghiệp Dầu Tiếng',
+    priceRange: '200.000đ - 350.000đ/lọ',
+    phoneContact: '02743561000',
+    zaloPhone: '0912345678',
+    standards: ['ATTP', 'OCOP 3 Sao'],
+    mainImage: { asset: { url: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&auto=format&fit=crop' } }
+  },
+  {
+    name: 'Yến Sào Dầu Tiếng Tinh Chế Nguyên Chất',
+    slug: { current: 'yen-sao-dau-tieng' },
+    starRating: '4',
+    producer: 'Cơ sở Yến Sào Sinh Thái Dầu Tiếng',
+    priceRange: '2.800.000đ - 3.500.000đ/100g',
+    phoneContact: '02743561000',
+    zaloPhone: '0901234567',
+    standards: ['OCOP 4 Sao', 'ISO 22000'],
+    mainImage: { asset: { url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&auto=format&fit=crop' } }
   }
 ];
 
 let spots = mockSpots;
 let ocopProducts = mockOcop;
 
-// Cố gắng query từ Sanity nếu đã có Project ID hợp lệ
 try {
   if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
-    const fetchedSpots = await sanityClient.fetch(`*[_type == "touristSpot"] | order(_createdAt desc)[0...3]`);
+    const fetchedSpots = await sanityClient.fetch(`*[_type == "touristSpot"] | order(_createdAt desc)`);
     if (fetchedSpots && fetchedSpots.length > 0) spots = fetchedSpots;
     
-    const fetchedOcop = await sanityClient.fetch(`*[_type == "ocopProduct"] | order(_createdAt desc)[0...3]`);
+    const fetchedOcop = await sanityClient.fetch(`*[_type == "ocopProduct"] | order(starRating desc)`);
     if (fetchedOcop && fetchedOcop.length > 0) ocopProducts = fetchedOcop;
   }
-} catch (e) {
-  console.log('Sanity query fallback to mock data');
-}
+} catch (e) {}
 ---
 
 <Layout title="Trang chủ">
@@ -97,14 +145,14 @@ try {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="max-w-3xl">
         <div class="inline-flex items-center gap-2 bg-brand-700/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-green-200 uppercase tracking-widest mb-6 border border-brand-500/30">
-          <span>🌿</span> Khám Phá Địa Phương
+          <span>🌿</span> Xã Dầu Tiếng, TP. Hồ Chí Minh
         </div>
         <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-tight">
-          Văn Hóa - Du Lịch & <br />
-          <span class="text-green-400">Nông Sản OCOP Tiêu Biểu</span>
+          Văn Hóa - Du Lịch Ven Hồ & <br />
+          <span class="text-green-400">Nông Sản OCOP Dầu Tiếng</span>
         </h1>
         <p class="mt-5 text-base sm:text-lg text-gray-200 leading-relaxed font-normal">
-          Chào mừng quý du khách đến với miền đất sinh thái trong lành, di tích lịch sử anh hùng và thưởng thức hương vị đặc sản nông nghiệp tinh hoa được chứng nhận OCOP.
+          Chào đón du khách đến với thiên nhiên trong lành của lòng hồ Dầu Tiếng, trải nghiệm cắm trại Bằng Lăng Glamping, Đồng Sến Farmstay, thăm Di tích Rừng cao su thời Pháp thuộc và thưởng thức đặc sản OCOP danh tiếng.
         </p>
         <div class="mt-8 flex flex-wrap gap-3 sm:gap-4">
           <a href="/du-lich" class="bg-brand-500 hover:bg-brand-600 text-gray-950 font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-green-500/20 transition transform hover:-translate-y-0.5">
@@ -123,7 +171,8 @@ try {
     <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
       <div>
         <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Trải nghiệm ấn tượng</span>
-        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Điểm Đến Du Lịch Nổi Bật</h2>
+        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Điểm Đến & Nghỉ Dưỡng Ven Hồ</h2>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">Glamping ven hồ, farmstay sinh thái và di tích lịch sử tại xã Dầu Tiếng, TP. Hồ Chí Minh</p>
       </div>
       <a href="/du-lich" class="text-sm font-bold text-brand-700 hover:text-brand-800 transition flex items-center gap-1">
         Xem tất cả điểm đến <span>→</span>
@@ -148,8 +197,8 @@ try {
       <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
         <div>
           <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Đặc sản quê hương</span>
-          <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Nông Sản OCOP Địa Phương</h2>
-          <p class="text-xs sm:text-sm text-gray-500 mt-1">Sản phẩm đạt chứng nhận 3 sao, 4 sao an toàn, rõ nguồn gốc xuất xứ</p>
+          <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Nông Sản & Sản Phẩm OCOP Tiêu Biểu</h2>
+          <p class="text-xs sm:text-sm text-gray-500 mt-1">Sản phẩm đạt chuẩn 3 sao, 4 sao an toàn, rõ nguồn gốc xuất xứ tại xã Dầu Tiếng</p>
         </div>
         <a href="/san-pham-ocop" class="text-sm font-bold text-brand-700 hover:text-brand-800 transition flex items-center gap-1">
           Xem toàn bộ giỏ hàng OCOP <span>→</span>

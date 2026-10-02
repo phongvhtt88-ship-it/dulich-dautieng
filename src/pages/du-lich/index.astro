@@ -6,34 +6,70 @@ import { sanityClient } from '../../lib/sanity';
 
 const mockSpots = [
   {
-    title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
-    slug: { current: 'rung-kien-an-ho-dau-tieng' },
+    title: 'Bằng Lăng Glamping Ven Hồ Dầu Tiếng',
+    slug: { current: 'bang-lang-glamping' },
+    category: 'checkin',
+    address: 'Bờ hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 250.000đ/người',
+    openHours: 'Đón khách 24/24',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3415,106.3550',
+    gpsLocation: { lat: 11.3415, lng: 106.3550 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Đồng Sến Farmstay Sinh Thái Ven Hồ',
+    slug: { current: 'dong-sen-farmstay' },
+    category: 'stay',
+    address: 'Ven hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 400.000đ/phòng',
+    openHours: '07:00 - 21:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3620,106.3650',
+    gpsLocation: { lat: 11.3620, lng: 106.3650 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Khu Di Tích Lịch Sử Rừng Cao Su Thời Pháp Thuộc',
+    slug: { current: 'rung-cao-su-phap-thuoc' },
     category: 'heritage',
-    address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
-    ticketPrice: 'Miễn phí',
-    openHours: '06:00 - 18:00',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.312, lng: 106.368 }
+    address: 'Trung tâm xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí tham quan',
+    openHours: '07:00 - 17:30 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3050,106.3720',
+    gpsLocation: { lat: 11.3050, lng: 106.3720 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop' } }
   },
   {
-    title: 'Vườn Cây Ăn Trái Sinh Thái Ven Sông',
-    slug: { current: 'vuon-cay-an-trai-ven-song' },
+    title: 'Quần Thể Danh Thắng Núi Cậu & Chùa Thái Sơn',
+    slug: { current: 'nui-cau-chua-thai-son' },
+    category: 'heritage',
+    address: 'Núi Cậu, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí vé',
+    openHours: '06:00 - 18:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3533,106.3775',
+    gpsLocation: { lat: 11.3533, lng: 106.3775 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&auto=format&fit=crop' } }
+  },
+  {
+    title: 'Thắng Cảnh Suối Trúc (Suối Tiên Dầu Tiếng)',
+    slug: { current: 'suoi-truc-dau-tieng' },
     category: 'ecotourism',
-    address: 'Ấp An Lợi, Dầu Tiếng, Bình Dương',
-    ticketPrice: '50.000đ/người',
-    openHours: '08:00 - 17:00',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.325, lng: 106.382 }
+    address: 'Chân Núi Cậu, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí',
+    openHours: '07:30 - 17:00 hàng ngày',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3580,106.3810',
+    gpsLocation: { lat: 11.3580, lng: 106.3810 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop' } }
   },
   {
-    title: 'Điểm Cắm Trại & Check-in Bán Đảo Tha La',
+    title: 'Bán Đảo Tha La - Hồ Dầu Tiếng',
     slug: { current: 'ban-dao-tha-la' },
     category: 'checkin',
-    address: 'Bờ hồ Dầu Tiếng, Bình Dương',
+    address: 'Bờ hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
     ticketPrice: 'Tự do',
     openHours: '24/24',
-    googleMapsUrl: 'https://maps.google.com',
-    gpsLocation: { lat: 11.345, lng: 106.340 }
+    googleMapsUrl: 'https://maps.google.com/?q=11.3452,106.3408',
+    gpsLocation: { lat: 11.3452, lng: 106.3408 },
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop' } }
   }
 ];
 
@@ -46,12 +82,15 @@ try {
 } catch (e) {}
 ---
 
-<Layout title="Điểm Đến Du Lịch">
+<Layout title="Điểm Đến Du Lịch & Nghỉ Dưỡng">
   <div class="bg-brand-900 text-white py-12 sm:py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-3xl sm:text-4xl font-black">Khám Phá Điểm Đến Du Lịch</h1>
+      <div class="inline-flex items-center gap-1.5 bg-brand-800 px-3 py-1 rounded-full text-xs font-bold text-green-300 uppercase tracking-wider mb-3">
+        <span>📍</span> Xã Dầu Tiếng, TP. Hồ Chí Minh
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black">Khám Phá Điểm Đến & Nghỉ Dưỡng Ven Hồ</h1>
       <p class="mt-2 text-gray-300 text-sm sm:text-base max-w-2xl">
-        Danh sách các danh lam thắng cảnh, di tích lịch sử hào hùng, vườn cây ăn trái sum suê và điểm cắm trại thư giãn tại địa phương.
+        Danh sách các khu cắm trại glamping thơ mộng, farmstay sinh thái ven hồ Dầu Tiếng, di tích lịch sử Rừng cao su thời Pháp thuộc và danh thắng Núi Cậu - Suối Trúc.
       </p>
     </div>
   </div>
@@ -64,7 +103,7 @@ try {
 
     <!-- Danh sách thẻ điểm đến -->
     <div>
-      <h2 class="text-xl sm:text-2xl font-black text-gray-900 mb-6">Tất Cả Điểm Đến ({spots.length})</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-gray-900 mb-6">Tất Cả Điểm Đến & Cơ Sở Nghỉ Dưỡng ({spots.length})</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {spots.map((spot) => (
           <SpotCard spot={spot} />

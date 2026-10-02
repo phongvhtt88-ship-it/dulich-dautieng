@@ -4,8 +4,11 @@ import { sanityClient, urlFor, portableTextToHtml } from '../../lib/sanity';
 
 export async function getStaticPaths() {
   const mockSpots = [
-    { slug: { current: 'rung-kien-an-ho-dau-tieng' } },
-    { slug: { current: 'vuon-cay-an-trai-ven-song' } },
+    { slug: { current: 'bang-lang-glamping' } },
+    { slug: { current: 'dong-sen-farmstay' } },
+    { slug: { current: 'rung-cao-su-phap-thuoc' } },
+    { slug: { current: 'nui-cau-chua-thai-son' } },
+    { slug: { current: 'suoi-truc-dau-tieng' } },
     { slug: { current: 'ban-dao-tha-la' } }
   ];
 
@@ -21,27 +24,64 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-let spot = {
-  title: 'Khu Di Tích Rừng Kiến An & Hồ Dầu Tiếng',
+const spotDetails = {
+  'bang-lang-glamping': {
+    title: 'Bằng Lăng Glamping Ven Hồ Dầu Tiếng',
+    category: 'checkin',
+    address: 'Bờ hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 250.000đ/người',
+    openHours: 'Đón khách 24/24',
+    phone: '0274.3561.000',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3415,106.3550',
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=1200&auto=format&fit=crop' } },
+    desc: '<p class="leading-relaxed"><strong>Bằng Lăng Glamping</strong> là một trong những điểm cắm trại ven hồ Dầu Tiếng được du khách vô cùng yêu thích. Nơi đây sở hữu bãi cỏ thoai thoải rợp bóng mát của hàng cây bằng lăng cổ thụ, view nhìn thẳng ra mặt nước hồ mênh mông lộng gió.</p><p class="leading-relaxed mt-4">Du khách đến đây có thể trải nghiệm các dịch vụ: lều trại cao cấp trang bị đầy đủ tiện nghi, tiệc nướng BBQ ngoài trời bên ánh lửa trại bập bùng, chèo thuyền kayak, chèo SUP đón hoàng hôn đỏ rực trên hồ Dầu Tiếng và ngắm bầu trời sao đêm thanh bình.</p>'
+  },
+  'dong-sen-farmstay': {
+    title: 'Đồng Sến Farmstay Sinh Thái Ven Hồ',
+    category: 'stay',
+    address: 'Ven hồ Dầu Tiếng, xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Từ 400.000đ/phòng',
+    openHours: '07:00 - 21:00 hàng ngày',
+    phone: '0274.3561.000',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3620,106.3650',
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=1200&auto=format&fit=crop' } },
+    desc: '<p class="leading-relaxed"><strong>Đồng Sến Farmstay</strong> mang đến không gian nghỉ dưỡng sinh thái mộc mạc, yên bình tách biệt hoàn toàn khỏi phố thị ồn ào. Nằm ẩn mình bên bờ hồ Dầu Tiếng, farmstay được bao bọc bởi những vườn cây xanh mướt và những căn bungalow gỗ xinh xắn đón trọn gió hồ mát rượi.</p><p class="leading-relaxed mt-4">Tại Đồng Sến Farmstay, du khách có thể trải nghiệm cuộc sống làm nông dân, câu cá thư giãn, hái rau sạch tại vườn và thưởng thức các món ăn đặc sản đậm chất thôn dã: cá lăng nướng muối ớt lòng hồ, gà thả vườn nướng cơm lam và canh chua cá đồng.</p>'
+  },
+  'rung-cao-su-phap-thuoc': {
+    title: 'Khu Di Tích Lịch Sử Rừng Cao Su Thời Pháp Thuộc',
+    category: 'heritage',
+    address: 'Trung tâm xã Dầu Tiếng, TP. Hồ Chí Minh',
+    ticketPrice: 'Miễn phí tham quan',
+    openHours: '07:00 - 17:30 hàng ngày',
+    phone: '0274.3561.000',
+    googleMapsUrl: 'https://maps.google.com/?q=11.3050,106.3720',
+    thumbnail: { asset: { url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&auto=format&fit=crop' } },
+    desc: '<p class="leading-relaxed"><strong>Khu di tích lịch sử Rừng cao su thời Pháp thuộc</strong> là chứng tích lịch sử đặc biệt gắn liền với sự hình thành và phát triển của vùng đất Dầu Tiếng từ đầu thế kỷ 20. Nơi đây bảo tồn những hàng cây cao su cổ thụ nguyên bản được trồng từ thời kỳ đầu người Pháp lập đồn điền cao su Michelin.</p><p class="leading-relaxed mt-4">Di tích là địa chỉ đỏ giáo dục truyền thống cách mạng hào hùng của giai cấp công nhân cao su Dầu Tiếng kiên cường trong công cuộc đấu tranh giải phóng dân tộc. Không gian rợp bóng mát với những hàng cây thẳng tắp còn là điểm check-in lịch sử và chụp ảnh lưu niệm đầy ấn tượng cho du khách gần xa.</p>'
+  }
+};
+
+let spot = spotDetails[slug] || {
+  title: 'Điểm Đến Du Lịch Xã Dầu Tiếng',
   category: 'heritage',
-  address: 'Xã An Lập & Dầu Tiếng, Bình Dương',
+  address: 'Xã Dầu Tiếng, TP. Hồ Chí Minh',
   ticketPrice: 'Miễn phí',
-  openHours: '06:00 - 18:00 hàng ngày',
+  openHours: '07:00 - 18:00 hàng ngày',
   phone: '0274.3561.000',
   googleMapsUrl: 'https://maps.google.com',
   thumbnail: null,
-  description: null
+  desc: '<p class="leading-relaxed">Điểm đến tham quan du lịch sinh thái và văn hóa lịch sử tiêu biểu tại xã Dầu Tiếng, TP. Hồ Chí Minh.</p>'
 };
 
 try {
   if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
     const fetched = await sanityClient.fetch(`*[_type == "touristSpot" && slug.current == $slug][0]`, { slug });
-    if (fetched) spot = fetched;
+    if (fetched) {
+      spot = { ...fetched, desc: portableTextToHtml(fetched.description) };
+    }
   }
 } catch (e) {}
 
-const imageUrl = spot.thumbnail ? urlFor(spot.thumbnail).width(1200).height(600).url() : 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop';
-const bodyHtml = spot.description ? portableTextToHtml(spot.description) : '<p class="text-gray-700 leading-relaxed">Khu di tích lịch sử và danh lam thắng cảnh sinh thái tiêu biểu của địa phương. Nơi đây lưu giữ những giá trị truyền thống cách mạng hào hùng, đồng thời sở hữu cảnh quan thiên nhiên hồ nước thoáng đãng, rừng cây râm mát, là điểm đến không thể bỏ qua của du khách khi ghé thăm địa phương.</p>';
+const imageUrl = spot.thumbnail?.asset?.url || (spot.thumbnail ? urlFor(spot.thumbnail).width(1200).height(600).url() : 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop');
 ---
 
 <Layout title={spot.title}>
@@ -53,7 +93,7 @@ const bodyHtml = spot.description ? portableTextToHtml(spot.description) : '<p c
     <h1 class="text-2xl sm:text-4xl font-black text-gray-900 leading-tight mb-4">{spot.title}</h1>
     
     <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-600 mb-8 pb-6 border-b border-gray-100">
-      <span class="bg-brand-50 text-brand-800 font-bold px-3 py-1 rounded-full">Địa điểm du lịch</span>
+      <span class="bg-brand-50 text-brand-800 font-bold px-3 py-1 rounded-full">Xã Dầu Tiếng, TP.HCM</span>
       <span>📍 {spot.address}</span>
       {spot.openHours && <span>⏰ {spot.openHours}</span>}
       {spot.ticketPrice && <span>🎟️ {spot.ticketPrice}</span>}
@@ -66,14 +106,14 @@ const bodyHtml = spot.description ? portableTextToHtml(spot.description) : '<p c
 
     <!-- Nội dung thuyết minh -->
     <div class="prose max-w-none text-gray-800 text-base sm:text-lg leading-relaxed space-y-4">
-      <Fragment set:html={bodyHtml} />
+      <Fragment set:html={spot.desc} />
     </div>
 
     <!-- Nút điều hướng chỉ đường & Hotline -->
     <div class="mt-12 p-6 bg-brand-50 rounded-2xl border border-brand-100 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div>
-        <h3 class="font-bold text-brand-900 text-lg">Bạn muốn ghé thăm địa điểm này?</h3>
-        <p class="text-sm text-brand-700 mt-1">Sử dụng Google Maps để nhận chỉ đường chi tiết hoặc gọi hotline hỗ trợ</p>
+        <h3 class="font-bold text-brand-900 text-lg">Bạn muốn ghé thăm hoặc đặt dịch vụ?</h3>
+        <p class="text-sm text-brand-700 mt-1">Sử dụng Google Maps để nhận chỉ đường chi tiết hoặc gọi hotline hỗ trợ du khách</p>
       </div>
       <div class="flex items-center gap-3">
         {spot.googleMapsUrl && (
